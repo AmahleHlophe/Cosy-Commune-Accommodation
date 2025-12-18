@@ -1,0 +1,242 @@
+@model Tenant
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create New Guest/Tenant - Cosy Commune</title>
+    <!-- Bootstrap CSS for layout and components -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+    <!-- Custom Styles (Matching Dashboard Aesthetic) -->
+    <style>
+        /* Base styles */
+        body { background-color: #f8f9fc; font-family: 'Inter', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        
+        .form-container {
+            max-width: 700px;
+            width: 95%;
+            padding: 3rem;
+            background: #ffffff;
+            border-radius: 1.5rem;
+            box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1);
+        }
+
+        .header-icon {
+            color: #4e73df;
+            margin-right: 0.5rem;
+        }
+
+        .form-control, .form-select {
+            border-radius: 0.5rem;
+        }
+
+        .tenant-fields {
+            border-top: 1px solid #e0e0e0;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+        }
+
+        .btn-primary {
+            background-color: #4e73df;
+            border-color: #4e73df;
+            border-radius: 0.5rem;
+            transition: background-color 0.2s;
+        }
+        .btn-primary:hover {
+            background-color: #2e59d9;
+            border-color: #2e59d9;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="form-container">
+        <h1 class="h3 mb-4 text-dark text-center">
+            <i class="fas fa-user-plus header-icon"></i> Create New User Profile
+        </h1>
+        <p class="text-muted text-center mb-5">
+            Fill out the details below to register a new tenant or short-stay guest.
+        </p>
+        
+        <form id="createUserForm">
+            <!-- 1. User Type Selection -->
+            <div class="mb-4 p-3 border rounded">
+                <label class="form-label fw-bold d-block mb-3">Select User Type:</label>
+                <div class="d-flex justify-content-around">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="userType" id="typeGuest" value="Guest" checked>
+                        <label class="form-check-label" for="typeGuest">
+                            <i class="fas fa-plane me-1 text-primary"></i> Short-Stay Guest
+                        </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="userType" id="typeTenant" value="Tenant">
+                        <label class="form-check-label" for="typeTenant">
+                            <i class="fas fa-building me-1 text-success"></i> Long-Term Tenant
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Common Information -->
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label for="fullName" class="form-label">Full Name</label>
+                    <input type="text" class="form-control" id="fullName" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="idNumber" class="form-label">ID / Passport Number</label>
+                    <input type="text" class="form-control" id="idNumber" required>
+                </div>
+            </div>
+
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <label for="email" class="form-label">Email Address</label>
+                    <input type="email" class="form-control" id="email" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="phone" class="form-label">Phone Number</label>
+                    <input type="tel" class="form-control" id="phone" required>
+                </div>
+            </div>
+
+            <!-- 3. Tenant-Specific Information (Initially Hidden) -->
+            <div id="tenantFields" class="tenant-fields" style="display: none;">
+                <h4 class="h5 mb-4 text-success">Lease Details</h4>
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label for="leaseStartDate" class="form-label">Lease Start Date</label>
+                        <input type="date" class="form-control" id="leaseStartDate">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="leaseDuration" class="form-label">Lease Duration (Months)</label>
+                        <select class="form-select" id="leaseDuration">
+                            <option value="">Select duration</option>
+                            <option value="6">6 Months</option>
+                            <option value="12">12 Months</option>
+                            <option value="24">24 Months</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label for="emergencyContact" class="form-label">Emergency Contact Name & Phone</label>
+                    <input type="text" class="form-control" id="emergencyContact" placeholder="e.g., Sarah Connor (555) 123-4567">
+                </div>
+            </div>
+
+            <!-- 4. Submit Button -->
+            <button type="submit" class="btn btn-primary btn-lg w-100 mt-4">
+                <i class="fas fa-save me-2"></i> Save User Profile
+            </button>
+        </form>
+
+        <div class="mt-4 text-center">
+            <a href="dashboard.html" class="text-muted small text-decoration-none">
+                <i class="fas fa-arrow-left me-1"></i> Cancel and Go Back
+            </a>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const userTypeRadios = document.querySelectorAll('input[name="userType"]');
+            const tenantFieldsDiv = document.getElementById('tenantFields');
+            const form = document.getElementById('createUserForm');
+
+            // Function to toggle visibility of tenant fields
+            function toggleTenantFields() {
+                const selectedType = document.querySelector('input[name="userType"]:checked').value;
+                if (selectedType === 'Tenant') {
+                    tenantFieldsDiv.style.display = 'block';
+                    // Make tenant-specific fields required when visible
+                    tenantFieldsDiv.querySelectorAll('input, select').forEach(el => el.required = true);
+                } else {
+                    tenantFieldsDiv.style.display = 'none';
+                    // Remove required attribute when hidden
+                    tenantFieldsDiv.querySelectorAll('input, select').forEach(el => el.required = false);
+                }
+            }
+
+            // Event listeners for radio buttons
+            userTypeRadios.forEach(radio => {
+                radio.addEventListener('change', toggleTenantFields);
+            });
+
+            // Initial call to set visibility on load
+            toggleTenantFields();
+
+            // Handle form submission (placeholder)
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+                
+                // Collect form data
+                const formData = new FormData(form);
+                const data = {};
+                formData.forEach((value, key) => {
+                    data[key] = value;
+                });
+                
+                // Add common fields
+                data['fullName'] = document.getElementById('fullName').value;
+                data['idNumber'] = document.getElementById('idNumber').value;
+                data['email'] = document.getElementById('email').value;
+                data['phone'] = document.getElementById('phone').value;
+
+                let message = `Successfully created new user: ${data.fullName}\nType: ${data.userType}\n`;
+
+                if (data.userType === 'Tenant') {
+                    message += `Lease Start: ${document.getElementById('leaseStartDate').value}\nDuration: ${document.getElementById('leaseDuration').value} Months`;
+                }
+
+                console.log("Form Data Submitted:", data);
+                
+                // Use a simple alert-replacement for feedback
+                alert(message); // Using simple alert for quick feedback as per original environment constraint, although custom modal UI is preferred.
+                
+                form.reset();
+                // Reset visibility after form submission
+                document.getElementById('typeGuest').checked = true;
+                toggleTenantFields();
+            });
+            
+            // Custom alert function (as per instructions, although using the built-in alert for simplicity in this file)
+            function alert(message) {
+                const modalHtml = `
+                    <div class="modal fade" id="feedbackModal" tabindex="-1" aria-labelledby="feedbackModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="feedbackModalLabel">Success!</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">${message.replace(/\n/g, '<br>')}</div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                document.body.insertAdjacentHTML('beforeend', modalHtml);
+                const modal = new bootstrap.Modal(document.getElementById('feedbackModal'));
+                modal.show();
+                
+                // Clean up the modal element after it's closed
+                document.getElementById('feedbackModal').addEventListener('hidden.bs.modal', function () {
+                    this.remove();
+                });
+            }
+        });
+    </script>
+</body>
+</html>

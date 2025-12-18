@@ -1,0 +1,5 @@
+{
+    "appService.preDeployTask": "publish-release",
+    "appService.deploySubpath": "bin/Release/net8.0/publish",
+    "appService.defaultWebAppToDeploy": "/subscriptions/cc6261b9-3b34-4791-9bfa-f571d1639c9b/resourceGroups/appsvc_windows_southafricanorth/providers/Microsoft.Web/sites/cosycommune"
+}

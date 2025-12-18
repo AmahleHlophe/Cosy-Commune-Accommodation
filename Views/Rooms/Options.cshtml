@@ -1,0 +1,132 @@
+@model Room;
+
+@{
+    Layout = null;
+}
+
+@* <h1 class="my-4">Booking Type</h1>
+
+<div>
+    <a asp-action="Guest" asp-controller="Create" asp-route-id="@Model.Id" class="linking">Holiday (less than 3 months)</a>
+    <a asp-action="Tenant" asp-controller="Create" asp-route-id="@Model.Id" class="linking"> Lease (more than 3 months) </a>
+</div> *@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Select Stay Period - Cosy Commune</title>
+    <!-- Bootstrap CSS for layout and components -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+    <!-- Custom Styles (Matching Dashboard Aesthetic) -->
+    <style>
+        /* Base styles */
+        body { background-color: #f8f9fc; font-family: 'Inter', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        
+        .options-container {
+            max-width: 900px;
+            width: 95%;
+            padding: 3rem;
+            background: #ffffff;
+            border-radius: 1.5rem;
+            box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        /* Card/Option Styling */
+        .stay-option {
+            border-radius: 1rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            border: 2px solid #e0e0e0;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        
+        .stay-option:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 1rem 2rem rgba(78, 115, 223, 0.2);
+            border-color: #4e73df;
+        }
+
+        .icon-circle {
+            background-color: #4e73df;
+            color: white;
+            padding: 1.5rem;
+            border-radius: 50%;
+            display: inline-flex;
+            margin-bottom: 1rem;
+        }
+
+        .icon-circle .fa-3x {
+            font-size: 2.5rem;
+        }
+
+        /* Long Stay specific style */
+        .long-stay .icon-circle {
+            background-color: #1cc88a;
+        }
+        .long-stay:hover {
+            border-color: #1cc88a;
+            box-shadow: 0 1rem 2rem rgba(28, 200, 138, 0.2);
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="options-container">
+        <h1 class="mb-2 text-dark">
+            <i class="fas fa-calendar-check text-primary me-2"></i> Select Your Stay Period
+        </h1>
+        <p class="text-muted mb-5">Are you planning a quick visit or looking for a longer commitment?</p>
+        
+        <div class="row g-4">
+            
+            <!-- === OPTION 1: SHORT STAY (Booking) === -->
+            <div class="col-md-6">
+                <a href="short_stay_booking.html" class="stay-option p-4">
+                    <div class="icon-circle">
+                        <i class="fas fa-bed fa-3x"></i>
+                    </div>
+                    <h2 class="h4 text-primary">Short-Stay Booking</h2>
+                    <p class="text-secondary mb-0">
+                        Daily, Weekly, or up to 30 days.
+                        <br>Ideal for travelers, temporary workers, and short visits.
+                    </p>
+                    <button class="btn btn-primary mt-3">Book Now</button>
+                </a>
+            </div>
+
+            <!-- === OPTION 2: LONG STAY (Application) === -->
+            <div class="col-md-6">
+                <a href="long_stay_application.html" class="stay-option long-stay p-4">
+                    <div class="icon-circle">
+                        <i class="fas fa-file-signature fa-3x"></i>
+                    </div>
+                    <h2 class="h4 text-success">Long-Stay Application</h2>
+                    <p class="text-secondary mb-0">
+                        Monthly, Quarterly, or 6+ months lease.
+                        <br>Requires an application and credit/background check.
+                    </p>
+                    <button class="btn btn-success mt-3">Apply Now</button>
+                </a>
+            </div>
+            
+        </div>
+
+        <div class="mt-5">
+            <a href="dashboard.html" class="text-muted small text-decoration-none">
+                <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
