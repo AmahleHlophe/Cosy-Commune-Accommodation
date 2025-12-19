@@ -27,8 +27,13 @@ body {
 
 
 .step-panel { display: none; }
-        .step-panel.active { display: block; animation: fadeIn 0.3s ease-in-out; }
+        .step-panel.active { display: block; animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .progress-line { height: 2px; transition: width 0.4s ease; }
-        #signature-canvas { cursor: crosshair; touch-action: none; border: 2px dashed #cbd5e1; width: 100%; height: 200px; }
-        .stay-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        
+        .property-card:hover { transform: translateY(-4px); }
+        .timer-progress { transition: width 1s linear; }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #6366f1; border-radius: 10px; }

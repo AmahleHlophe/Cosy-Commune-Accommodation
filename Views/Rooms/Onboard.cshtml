@@ -1,436 +1,420 @@
-@model BookingVM;
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Booking Management | Cosy Commune</title>
+    <title>Cosy Commune | Booking Workflow</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-gray-50 text-slate-900 min-h-screen">
+<body class="bg-slate-50 text-slate-900 font-sans">
 
-<div class="max-w-5xl mx-auto px-4 py-10">
+<div class="max-w-6xl mx-auto px-4 py-8">
     <!-- Header -->
-    <div class="flex items-center justify-between mb-8">
-        <div>
-            <h1 class="text-2xl font-bold text-indigo-950">New Booking</h1>
+    <header class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg">
+                <i class="fa-solid fa-house-chimney-window"></i>
+            </div>
+            <div>
+                <h1 class="text-xl font-bold text-slate-900">Cosy Commune</h1>
+                <p class="text-xs text-slate-500 uppercase tracking-widest font-semibold">Hospitality Group</p>
+            </div>
+        </div>
+
+        <!-- Navigation Progress -->
+        <nav class="flex items-center gap-2 bg-white p-1.5 rounded-full border border-slate-200 shadow-sm overflow-x-auto no-scrollbar">
+            <div class="step-dot px-4 py-1.5 rounded-full text-xs font-bold transition-all bg-indigo-600 text-white" data-step="1">1. Search</div>
+            <div class="step-dot px-4 py-1.5 rounded-full text-xs font-bold transition-all text-slate-400" data-step="2">2. Results</div>
+            <div class="step-dot px-4 py-1.5 rounded-full text-xs font-bold transition-all text-slate-400" data-step="3">3. Review</div>
+            <div class="step-dot px-4 py-1.5 rounded-full text-xs font-bold transition-all text-slate-400" data-step="4">4. Details</div>
+            <div class="step-dot px-4 py-1.5 rounded-full text-xs font-bold transition-all text-slate-400" data-step="5">5. Payment</div>
+        </nav>
+    </header>
+
+    <!-- Timer/Hold Banner (Hidden by default) -->
+    <div id="holdTimer" class="hidden mb-6 bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-center justify-between shadow-sm">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center animate-pulse">
+                <i class="fa-solid fa-hourglass-half"></i>
+            </div>
+            <div>
+                <p class="text-sm font-bold text-amber-900">Room Held for you</p>
+                <p class="text-xs text-amber-700">Complete your booking before the timer expires.</p>
+            </div>
+        </div>
+        <div class="text-right">
+            <span id="timerDisplay" class="text-xl font-mono font-bold text-amber-600">10:00</span>
+            <div class="w-32 h-1 bg-amber-200 mt-1 rounded-full overflow-hidden">
+                <div id="timerBar" class="h-full bg-amber-500 timer-progress" style="width: 100%;"></div>
+            </div>
         </div>
     </div>
 
-    <!-- Multi-Step Progress Tracker -->
-    <div class="mb-10 relative px-4">
-        <div class="flex justify-between relative z-10">
-            <div class="step-indicator flex flex-col items-center" data-step="1">
-                <div class="w-10 h-10 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold ring-4 ring-white shadow-md transition-colors text-sm">1</div>
-                <span class="text-[10px] mt-2 font-bold uppercase tracking-tight text-indigo-600">Room</span>
-            </div>
-            <div class="step-indicator flex flex-col items-center" data-step="2">
-                <div class="w-10 h-10 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center font-bold ring-4 ring-white transition-colors text-sm">2</div>
-                <span class="text-[10px] mt-2 font-bold uppercase tracking-tight text-gray-400">Stay</span>
-            </div>
-            <div class="step-indicator flex flex-col items-center" data-step="3">
-                <div class="w-10 h-10 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center font-bold ring-4 ring-white transition-colors text-sm">3</div>
-                <span class="text-[10px] mt-2 font-bold uppercase tracking-tight text-gray-400">Client</span>
-            </div>
-            <div class="step-indicator flex flex-col items-center" data-step="4">
-                <div class="w-10 h-10 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center font-bold ring-4 ring-white transition-colors text-sm">4</div>
-                <span class="text-[10px] mt-2 font-bold uppercase tracking-tight text-gray-400">Legal</span>
-            </div>
-            <div class="step-indicator flex flex-col items-center" data-step="5">
-                <div class="w-10 h-10 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center font-bold ring-4 ring-white transition-colors text-sm">5</div>
-                <span class="text-[10px] mt-2 font-bold uppercase tracking-tight text-gray-400">Payment</span>
-            </div>
-        </div>
-        <div class="absolute top-5 left-8 right-8 h-0.5 bg-gray-200 -z-0">
-            <div id="progress-line" class="bg-indigo-600 h-full w-0 transition-all duration-500"></div>
-        </div>
-    </div>
-
-    <!-- Wizard Content -->
-    <form asp-action="BookUnit" id="bookingForm" method="post" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+    <!-- MAIN WORKFLOW CONTAINER -->
+    <main class="bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-200 overflow-hidden min-h-[500px]">
         
-        <!-- STEP 1: Pick Room -->
-        <div class="step-panel active p-8" id="step1">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-xl font-bold flex items-center gap-2">
-                    <i class="fa-solid fa-door-open text-indigo-600"></i> Select Available Room
-                </h2>
+        <!-- STEP 1: Search & Filter -->
+        <div class="step-panel active" id="step1">
+            <div class="p-8 md:p-12 max-w-2xl mx-auto">
+                <div class="text-center mb-10">
+                    <h2 class="text-3xl font-black text-slate-900 mb-2">Find your perfect stay</h2>
+                    <p class="text-slate-500">Search 500+ premium rooms in the Commune network</p>
+                </div>
+                
+                <div class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold uppercase text-slate-400 ml-1">Check-in</label>
+                            <input type="date" id="checkInDate" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold uppercase text-slate-400 ml-1">Check-out</label>
+                            <input type="date" id="checkOutDate" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold uppercase text-slate-400 ml-1">Location / Commune</label>
+                        <select class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all appearance-none">
+                            <option>Cape Town CBD</option>
+                            <option>Johannesburg Sandton</option>
+                            <option>Durban North</option>
+                        </select>
+                    </div>
+                    <button onclick="goToStep(2)" class="w-full py-5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl shadow-lg shadow-indigo-100 transition-all transform active:scale-[0.98]">
+                        Check Availability
+                    </button>
+                </div>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                @foreach(var unit in Model.Rooms){
-                    <label class="relative block group cursor-pointer">
-                    <input type="radio" name="unit" value="101" class="peer absolute opacity-0" checked>
-                    <div class="p-5 border-2 border-slate-100 rounded-xl peer-checked:border-indigo-600 peer-checked:bg-indigo-50/50 transition-all">
-                        <span class="font-bold text-lg">Room @unit.RoomNumber</span>
-                        <p class="text-sm text-slate-500">Type: @unit.RoomType</p>
-                        <p class="text-sm text-slate-500">Capacity: @unit.Capacity</p>
-                        <div class="mt-4 flex items-center justify-between">
-                            @if(!unit.IsOccupied){
-                                <span class="text-indigo-700 font-bold">Available</span>
-                            }
-                            <i class="fa-solid fa-circle-check text-indigo-600 opacity-0 peer-checked:opacity-100"></i>
+        </div>
+
+        <!-- STEP 2: Availability Check & Selection -->
+        <div class="step-panel" id="step2">
+            <div class="p-8">
+                <div class="flex items-center justify-between mb-8 pb-6 border-b border-slate-100">
+                    <div>
+                        <h2 class="text-2xl font-bold">Available Properties</h2>
+                        <p class="text-sm text-slate-500">Based on your dates: <span class="font-bold text-indigo-600">June 12 - June 15</span></p>
+                    </div>
+                    <button onclick="goToStep(1)" class="text-sm font-bold text-slate-400 hover:text-slate-900 transition-colors">Change Dates</button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="resultsGrid">
+                    <!-- Property Cards -->
+                    <div class="property-card bg-white border border-slate-200 rounded-2xl overflow-hidden transition-all cursor-pointer group" onclick="selectProperty('Studio 101', 550)">
+                        <div class="h-48 bg-slate-200 relative">
+                            <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&q=80&w=600" class="w-full h-full object-cover">
+                            <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold shadow-sm">
+                                4.9 <i class="fa-solid fa-star text-amber-400"></i>
+                            </div>
+                        </div>
+                        <div class="p-5">
+                            <h3 class="font-bold text-lg group-hover:text-indigo-600 transition-colors">The Urban Studio 101</h3>
+                            <p class="text-sm text-slate-500 mb-4">Industrial Park • Ground Floor</p>
+                            <div class="flex items-center justify-between pt-4 border-t border-slate-50">
+                                <div>
+                                    <span class="text-xl font-black text-slate-900">R 550</span>
+                                    <span class="text-xs text-slate-400">/ night</span>
+                                </div>
+                                <span class="text-xs font-bold text-indigo-600 uppercase tracking-tighter">View Room</span>
+                            </div>
                         </div>
                     </div>
 
-                    <a asp-route-id="@unit.Id" type="hidden"></a>
-                </label>
-                }
-            </div>
-        </div>
-
-        <!-- STEP 2: Choose Period -->
-        <div class="step-panel p-8" id="step2">
-            <h2 class="text-xl font-bold mb-6 flex items-center gap-2">
-                <i class="fa-solid fa-calendar-day text-indigo-600"></i> Choose Stay Period
-            </h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <label class="stay-card relative p-6 border-2 border-slate-100 rounded-2xl cursor-pointer hover:border-indigo-200 group">
-                    <input type="radio" name="stayType" value="short" class="peer absolute opacity-0" checked onchange="toggleStayContext()">
-                    <div class="peer-checked:text-indigo-600 transition-colors">
-                        <div class="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mb-4 group-hover:bg-indigo-100 transition-colors">
-                            <i class="fa-solid fa-clock text-xl"></i>
+                    <div class="property-card bg-white border border-slate-200 rounded-2xl overflow-hidden transition-all cursor-pointer group" onclick="selectProperty('Deluxe Suite 205', 850)">
+                        <div class="h-48 bg-slate-200 relative">
+                            <img src="https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&q=80&w=600" class="w-full h-full object-cover">
+                            <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold shadow-sm">
+                                5.0 <i class="fa-solid fa-star text-amber-400"></i>
+                            </div>
                         </div>
-                        <h3 class="font-bold text-lg">Short Stay</h3>
-                        <p class="text-sm text-slate-500 mt-1">Daily rates. Best for visits &lt; 30 days.</p>
-                        <div class="mt-4 pt-4 border-t border-slate-50 opacity-0 peer-checked:opacity-100">
-                             <input type="number" id="nightsInput" value="3" placeholder="Number of nights" class="w-full border rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500">
+                        <div class="p-5">
+                            <h3 class="font-bold text-lg group-hover:text-indigo-600 transition-colors">Deluxe Balcony Suite 205</h3>
+                            <p class="text-sm text-slate-500 mb-4">City Heights • Rooftop Access</p>
+                            <div class="flex items-center justify-between pt-4 border-t border-slate-50">
+                                <div>
+                                    <span class="text-xl font-black text-slate-900">R 850</span>
+                                    <span class="text-xs text-slate-400">/ night</span>
+                                </div>
+                                <span class="text-xs font-bold text-indigo-600 uppercase tracking-tighter">View Room</span>
+                            </div>
                         </div>
                     </div>
-                </label>
+                </div>
+            </div>
+        </div>
 
-                <label class="stay-card relative p-6 border-2 border-slate-100 rounded-2xl cursor-pointer hover:border-indigo-200 group">
-                    <input type="radio" name="stayType" value="long" class="peer absolute opacity-0" onchange="toggleStayContext()">
-                    <div class="peer-checked:text-indigo-600 transition-colors">
-                        <div class="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mb-4 group-hover:bg-indigo-100 transition-colors">
-                            <i class="fa-solid fa-house-user text-xl"></i>
+        <!-- STEP 3: Review & Soft Lock -->
+        <div class="step-panel" id="step3">
+            <div class="grid grid-cols-1 lg:grid-cols-5 h-full">
+                <div class="lg:col-span-3 p-8 md:p-12">
+                    <h2 class="text-2xl font-bold mb-6">Review your Selection</h2>
+                    <div class="flex items-center gap-6 mb-8 bg-slate-50 p-6 rounded-3xl">
+                        <div class="w-32 h-24 bg-slate-200 rounded-2xl overflow-hidden">
+                            <img id="selectedImg" src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&q=80&w=300" class="w-full h-full object-cover">
                         </div>
-                        <h3 class="font-bold text-lg">Long-Term Lease</h3>
-                        <p class="text-sm text-slate-500 mt-1">Monthly rates. 6+ months commitment.</p>
-                        <div class="mt-4 pt-4 border-t border-slate-50 opacity-0 peer-checked:opacity-100">
-                             <select id="leaseDuration" class="w-full border rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500">
-                                 <option value="6">6 Months</option>
-                                 <option value="12">12 Months</option>
-                             </select>
-                        </div>
-                    </div>
-                </label>
-            </div>
-        </div>
-
-        <!-- STEP 3: Client Details -->
-        <div class="step-panel p-8" id="step3">
-            <h2 class="text-xl font-bold mb-6 flex items-center gap-2">
-                <i class="fa-solid fa-id-card text-indigo-600"></i> Capture Client Details
-            </h2>
-                <div class="md:col-span-2">
-                    <label class="block text-sm font-semibold text-slate-700 mb-2">Full Legal Name</label>
-                    <input type="text" id="firstName" required class="w-full border border-slate-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-indigo-500 outline-none">
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-2">ID / Passport Number</label>
-                    <input type="text" class="w-full border border-slate-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-indigo-500 outline-none">
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-2">Email Address</label>
-                    <input type="email" id="email" required class="w-full border border-slate-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-indigo-500 outline-none">
-            </div>
-        </div>
-
-        <!-- STEP 4: Legal / Signature -->
-        <div class="step-panel p-8" id="step4">
-            <h2 class="text-xl font-bold mb-6 flex items-center gap-2">
-                <i class="fa-solid fa-file-signature text-indigo-600"></i> Legal Acceptance
-            </h2>
-            
-            <div id="legalAgreementBox" class="bg-slate-50 border rounded-xl p-5 text-xs text-slate-600 h-32 overflow-y-auto mb-6 leading-relaxed shadow-inner">
-                <p class="font-bold mb-2 uppercase">Agreement Terms</p>
-                <div id="legalTextContent">
-                    <!-- Dynamic Legal Text -->
-                </div>
-            </div>
-            
-            <div class="flex flex-col items-center">
-                <canvas id="signature-canvas" class="bg-white rounded-xl shadow-inner mb-2"></canvas>
-                <div class="flex justify-between w-full">
-                    <p class="text-[10px] text-slate-400 font-medium uppercase tracking-wider">Tenant Signature Required</p>
-                    <button type="button" onclick="clearSignature()" class="text-xs font-bold text-red-500 hover:text-red-700 uppercase">Clear</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- STEP 5: Payment -->
-        <div class="step-panel p-8" id="step5">
-            <h2 class="text-xl font-bold mb-6 flex items-center gap-2">
-                <i class="fa-solid fa-credit-card text-indigo-600"></i> Payment & Billing
-            </h2>
-            
-            <div id="paymentSummary">
-                <!-- Injected via setupPaymentStep() -->
-            </div>
-
-            <div class="mt-8 space-y-4">
-                <h4 class="text-sm font-bold text-slate-700 uppercase tracking-wider">Payment Method Verification</h4>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <label class="flex items-center gap-4 p-4 border rounded-xl cursor-pointer hover:bg-slate-50 transition">
-                        <input type="radio" name="payMethod" value="eft" checked class="w-4 h-4 text-indigo-600">
                         <div>
-                            <p class="font-bold text-sm">Manual EFT / Cash</p>
-                            <p class="text-xs text-slate-500">Manager to verify proof of payment</p>
+                            <h3 id="reviewTitle" class="text-xl font-bold">Studio 101</h3>
+                            <p class="text-slate-500 text-sm">3 Nights • 2 Guests</p>
+                            <p class="text-indigo-600 font-bold mt-2">Free Cancellation before 48h</p>
                         </div>
-                    </label>
-                    <label class="flex items-center gap-4 p-4 border rounded-xl cursor-pointer hover:bg-slate-50 transition">
-                        <input type="radio" name="payMethod" value="card" class="w-4 h-4 text-indigo-600">
-                        <div>
-                            <p class="font-bold text-sm">Credit/Debit Card</p>
-                            <p class="text-xs text-slate-500">Processed via internal card terminal</p>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3 text-slate-600">
+                            <i class="fa-solid fa-wifi"></i> <span>High Speed Fiber Internet</span>
                         </div>
-                    </label>
+                        <div class="flex items-center gap-3 text-slate-600">
+                            <i class="fa-solid fa-bolt"></i> <span>Loadsidding Protected (Inverter)</span>
+                        </div>
+                        <div class="flex items-center gap-3 text-slate-600">
+                            <i class="fa-solid fa-shield-check"></i> <span>24/7 Security Patrol</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-12 flex gap-4">
+                        <button onclick="goToStep(2)" class="px-8 py-4 border border-slate-200 rounded-2xl font-bold hover:bg-slate-50 transition-all">Go Back</button>
+                        <button onclick="startSoftLock()" class="flex-1 py-4 bg-indigo-600 text-white rounded-2xl font-bold shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all">Proceed to Checkout</button>
+                    </div>
+                </div>
+                
+                <!-- Price Sidebar -->
+                <div class="lg:col-span-2 bg-slate-50 p-8 border-l border-slate-100">
+                    <h3 class="font-bold text-lg mb-6">Price Summary</h3>
+                    <div class="space-y-4 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-slate-500">Accommodation <span id="calcLabel">3 nights</span></span>
+                            <span class="font-bold" id="basePriceDisplay">R 1,650.00</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-500">Cleaning Fee</span>
+                            <span class="font-bold">R 150.00</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-500">VAT (15%)</span>
+                            <span class="font-bold" id="vatDisplay">R 270.00</span>
+                        </div>
+                        <div class="pt-4 border-t border-slate-200 flex justify-between items-center">
+                            <span class="text-lg font-bold">Total Amount</span>
+                            <span class="text-3xl font-black text-indigo-600" id="totalPriceDisplay">R 2,070.00</span>
+                        </div>
+                    </div>
+                    <div class="mt-8 p-4 bg-indigo-50 rounded-xl border border-indigo-100">
+                        <p class="text-xs text-indigo-700 leading-relaxed">
+                            <i class="fa-solid fa-circle-info mr-1"></i> A R500 security deposit will be authorized on your card upon arrival.
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Action Footer -->
-        <div class="bg-slate-50 px-8 py-5 border-t border-slate-200 flex justify-between">
-            <button type="button" id="prevBtn" onclick="changeStep(-1)" class="px-6 py-2.5 rounded-lg font-bold text-slate-500 hover:text-slate-800 transition-colors invisible">Back</button>
-            <button type="submit" id="nextBtn" onclick="changeStep(1)" class="bg-indigo-600 text-white px-8 py-2.5 rounded-lg font-bold shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition-all flex items-center gap-2">
-                Continue <i class="fa-solid fa-arrow-right text-sm"></i>
-            </button>
+        <!-- STEP 4: Guest Information -->
+        <div class="step-panel" id="step4">
+            <div class="p-8 md:p-12 max-w-3xl mx-auto">
+                <h2 class="text-2xl font-bold mb-8">Guest Details</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold uppercase text-slate-400 ml-1">First Name</label>
+                        <input type="text" placeholder="John" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold uppercase text-slate-400 ml-1">Last Name</label>
+                        <input type="text" placeholder="Doe" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none">
+                    </div>
+                    <div class="space-y-2 md:col-span-2">
+                        <label class="text-xs font-bold uppercase text-slate-400 ml-1">Email Address</label>
+                        <input type="email" placeholder="john@example.com" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none">
+                    </div>
+                    <div class="space-y-2 md:col-span-2">
+                        <label class="text-xs font-bold uppercase text-slate-400 ml-1">Special Requests</label>
+                        <textarea placeholder="e.g. Late check-in, dietary needs" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none h-32 resize-none"></textarea>
+                    </div>
+                </div>
+                <button onclick="goToStep(5)" class="w-full py-5 bg-indigo-600 text-white font-bold rounded-2xl shadow-lg hover:bg-indigo-700 transition-all">
+                    Continue to Payment
+                </button>
+            </div>
         </div>
-    </form>
-</div>
 
-<!-- Completion Modal -->
-<div id="completionModal" class="fixed inset-0 bg-slate-950/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-3xl p-10 max-w-md w-full text-center shadow-2xl">
-        <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl">
-            <i class="fa-solid fa-check-double"></i>
+        <!-- STEP 5: Payment & Confirmation -->
+        <div class="step-panel" id="step5">
+            <div class="p-8 md:p-12 max-w-xl mx-auto">
+                <div id="paymentArea">
+                    <h2 class="text-2xl font-bold mb-2">Secure Payment</h2>
+                    <p class="text-slate-500 mb-8 text-sm">Enter your card details to finalize the room.</p>
+                    
+                    <div class="space-y-6">
+                        <div class="p-6 bg-slate-900 rounded-3xl text-white shadow-xl relative overflow-hidden mb-8">
+                            <div class="relative z-10">
+                                <p class="text-[10px] opacity-60 uppercase mb-4">Credit Card Provider</p>
+                                <div class="text-xl font-mono tracking-widest mb-6">**** **** **** 1234</div>
+                                <div class="flex justify-between items-end">
+                                    <div>
+                                        <p class="text-[10px] opacity-40 uppercase">Card Holder</p>
+                                        <p class="text-sm font-bold tracking-wide">JOHN DOE</p>
+                                    </div>
+                                    <div class="w-12 h-8 bg-slate-700 rounded flex items-center justify-center opacity-50">
+                                        <i class="fa-brands fa-cc-visa text-2xl"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="absolute -right-8 -bottom-8 w-40 h-40 bg-indigo-500/20 rounded-full blur-3xl"></div>
+                        </div>
+
+                        <button onclick="processPayment()" id="payBtn" class="w-full py-5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl shadow-lg transition-all flex items-center justify-center gap-3">
+                            <span>Pay <span id="finalTotal">R 2,070.00</span></span>
+                            <i class="fa-solid fa-lock text-sm opacity-60"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Success State (Hidden until pay) -->
+                <div id="successState" class="hidden text-center py-10">
+                    <div class="w-24 h-24 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-8 shadow-inner">
+                        <i class="fa-solid fa-check"></i>
+                    </div>
+                    <h2 class="text-3xl font-black mb-4">Booking Confirmed!</h2>
+                    <p class="text-slate-500 mb-8 leading-relaxed">
+                        We've sent a confirmation email to <span class="font-bold text-slate-900">john@example.com</span>. 
+                        Your digital key will be available in the app 24h before arrival.
+                    </p>
+                    <div class="grid grid-cols-2 gap-3 mb-10">
+                        <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                            <p class="text-[10px] font-bold text-slate-400 uppercase">Booking ID</p>
+                            <p class="font-mono text-sm">#CC-88219</p>
+                        </div>
+                        <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                            <p class="text-[10px] font-bold text-slate-400 uppercase">Room</p>
+                            <p id="finalRoomName" class="font-bold text-sm">Studio 101</p>
+                        </div>
+                    </div>
+                    <button onclick="window.location.reload()" class="w-full py-4 border border-slate-200 rounded-2xl font-bold text-slate-500 hover:bg-slate-50 transition-all">Return Home</button>
+                </div>
+            </div>
         </div>
-        <h3 class="text-2xl font-bold text-slate-900 mb-2">Booking Finalized</h3>
-        <p class="text-slate-500 mb-8 leading-relaxed">Profile created and transaction recorded. Documentation sent to <strong id="sentEmail" class="text-slate-800">...</strong>.</p>
-        <button onclick="window.location.reload()" class="w-full bg-slate-900 text-white py-3.5 rounded-xl font-bold hover:bg-slate-800 transition">Complete & Exit</button>
-    </div>
+    </main>
+
+    <!-- Footer Meta -->
+    <footer class="mt-8 text-center text-slate-400 text-xs flex flex-col items-center gap-2">
+        <p>&copy; 2024 Cosy Commune Hospitality. Licensed in South Africa.</p>
+        <div class="flex gap-4">
+            <a href="#" class="hover:text-indigo-600">Privacy Policy</a>
+            <span>&bull;</span>
+            <a href="#" class="hover:text-indigo-600">Terms of Service</a>
+        </div>
+    </footer>
 </div>
 
 <script>
     let currentStep = 1;
-    const totalSteps = 5;
+    let selectedRoom = "";
+    let roomPrice = 0;
+    let timerInterval = null;
+    let secondsLeft = 600; // 10 minutes
 
-    function changeStep(n) {
-        const panels = document.querySelectorAll('.step-panel');
-        
-        // Validations
-        if (n === 1) {
-            if (currentStep === 3) {
-                if (!document.getElementById('firstName').value || !document.getElementById('email').value) {
-                    alert("Please capture basic client details.");
-                    return;
-                }
-            }
-        }
-
-        // Setup Logic for Step Context
-        if (n === 1 && currentStep === 3) {
-            setupLegalStep();
-        }
-        if (n === 1 && currentStep === 4) {
-            setupPaymentStep();
-        }
-
-        panels[currentStep - 1].classList.remove('active');
-        currentStep += n;
-
-        if (currentStep > totalSteps) {
-            finalizeBooking();
-            return;
-        }
-
-        panels[currentStep - 1].classList.add('active');
-        updateUI();
-        
-        // Refresh canvas on entering legal step
-        if (currentStep === 4) {
-            setTimeout(setupCanvas, 100);
-        }
-    }
-
-    function toggleStayContext() {
-        // Function called when stay type changes - visuals handled by CSS peers
-        console.log("Stay mode toggled");
-    }
-
-    function setupLegalStep() {
-        const stayType = document.querySelector('input[name="stayType"]:checked').value;
-        const textContainer = document.getElementById('legalTextContent');
-        
-        if (stayType === 'long') {
-            textContainer.innerHTML = `
-                <p class="mb-2"><strong>Lease Period:</strong> Monthly renewal with fixed term. Minimum 6 months required.</p>
-                <p class="mb-2"><strong>Notice:</strong> One calendar month written notice for termination.</p>
-                <p><strong>Damage Deposit:</strong> Equivalent to one month's rent held in trust.</p>
-            `;
-        } else {
-            textContainer.innerHTML = `
-                <p class="mb-2"><strong>Short Stay:</strong> Daily occupancy. Non-transferable.</p>
-                <p class="mb-2"><strong>Check-out:</strong> Strictly 10:00 AM on departure day.</p>
-                <p><strong>Liability:</strong> Client is responsible for any damage to furniture or equipment.</p>
-            `;
-        }
-    }
-
-    function setupPaymentStep() {
-        const stayType = document.querySelector('input[name="stayType"]:checked').value;
-        const paymentContainer = document.getElementById('paymentSummary');
-        
-        if (stayType === 'long') {
-            paymentContainer.innerHTML = `
-                <div class="bg-indigo-900 text-white rounded-2xl p-6 shadow-xl">
-                    <div class="flex justify-between items-center mb-4 border-b border-indigo-800 pb-4">
-                        <div>
-                            <p class="text-xs text-indigo-300 font-bold uppercase tracking-widest">Description</p>
-                            <p class="font-medium text-lg">Initial Lease Invoice</p>
-                        </div>
-                        <div class="text-right">
-                            <span class="bg-indigo-700 text-[10px] px-2 py-1 rounded-md font-bold uppercase">Recurring</span>
-                        </div>
-                    </div>
-                    <div class="space-y-3">
-                        <div class="flex justify-between text-sm">
-                            <span class="opacity-70">Security Deposit (1 Month)</span>
-                            <span class="font-bold">R 7,500.00</span>
-                        </div>
-                        <div class="flex justify-between text-sm">
-                            <span class="opacity-70">First Month Pro-Rata Rent</span>
-                            <span class="font-bold">R 7,500.00</span>
-                        </div>
-                        <div class="pt-4 border-t border-indigo-800 flex justify-between items-center">
-                            <span class="text-lg">Total Due Now</span>
-                            <span class="text-3xl font-black">R 15,000.00</span>
-                        </div>
-                    </div>
-                </div>
-            `;
-        } else {
-            const nights = document.getElementById('nightsInput').value || 1;
-            const total = nights * 550;
-            paymentContainer.innerHTML = `
-                <div class="bg-indigo-600 text-white rounded-2xl p-6 shadow-xl">
-                    <div class="flex justify-between items-center mb-4 border-b border-indigo-500 pb-4">
-                        <div>
-                            <p class="text-xs text-indigo-200 font-bold uppercase tracking-widest">Description</p>
-                            <p class="font-medium text-lg">Short Stay Reservation</p>
-                        </div>
-                        <div class="text-right">
-                            <span class="bg-indigo-500 text-[10px] px-2 py-1 rounded-md font-bold uppercase">Once-off</span>
-                        </div>
-                    </div>
-                    <div class="space-y-3">
-                        <div class="flex justify-between text-sm">
-                            <span class="opacity-70">Daily Rate (R550.00 × ${nights})</span>
-                            <span class="font-bold">R ${total.toLocaleString()}.00</span>
-                        </div>
-                        <div class="pt-4 border-t border-indigo-500 flex justify-between items-center">
-                            <span class="text-lg">Amount Payable</span>
-                            <span class="text-3xl font-black">R ${total.toLocaleString()}.00</span>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-    }
-
-    function updateUI() {
-        const indicators = document.querySelectorAll('.step-indicator');
-        const progressLine = document.getElementById('progress-line');
-        
-        indicators.forEach((ind, idx) => {
-            const stepNum = idx + 1;
-            const icon = ind.querySelector('div');
-            const text = ind.querySelector('span');
-
-            if (stepNum < currentStep) {
-                icon.className = 'w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center font-bold ring-4 ring-white shadow-md transition-colors text-sm';
-                icon.innerHTML = '<i class="fa-solid fa-check"></i>';
-                text.className = 'text-[10px] mt-2 font-bold uppercase tracking-tight text-green-600';
-            } else if (stepNum === currentStep) {
-                icon.className = 'w-10 h-10 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold ring-4 ring-white shadow-md transition-colors text-sm';
-                icon.innerText = stepNum;
-                text.className = 'text-[10px] mt-2 font-bold uppercase tracking-tight text-indigo-600';
+    function goToStep(step) {
+        // Update Nav UI
+        document.querySelectorAll('.step-dot').forEach((dot, idx) => {
+            const dotStep = idx + 1;
+            if (dotStep < step) {
+                dot.classList.remove('bg-indigo-600', 'text-white', 'text-slate-400');
+                dot.classList.add('bg-emerald-500', 'text-white');
+                dot.innerHTML = `<i class="fa-solid fa-check mr-1"></i> ${dotStep}`;
+            } else if (dotStep === step) {
+                dot.classList.remove('bg-emerald-500', 'text-slate-400');
+                dot.classList.add('bg-indigo-600', 'text-white');
+                dot.innerHTML = `${dotStep}. ${getStepName(dotStep)}`;
             } else {
-                icon.className = 'w-10 h-10 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center font-bold ring-4 ring-white transition-colors text-sm';
-                icon.innerText = stepNum;
-                text.className = 'text-[10px] mt-2 font-bold uppercase tracking-tight text-gray-400';
+                dot.classList.remove('bg-indigo-600', 'bg-emerald-500', 'text-white');
+                dot.classList.add('text-slate-400');
+                dot.innerHTML = `${dotStep}. ${getStepName(dotStep)}`;
             }
         });
 
-        progressLine.style.width = `${((currentStep - 1) / (totalSteps - 1)) * 100}%`;
+        // Toggle Panels
+        document.querySelectorAll('.step-panel').forEach(panel => panel.classList.remove('active'));
+        document.getElementById(`step${step}`).classList.add('active');
+        currentStep = step;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 
-        const prevBtn = document.getElementById('prevBtn');
-        const nextBtn = document.getElementById('nextBtn');
+    function getStepName(step) {
+        return ["Search", "Results", "Review", "Details", "Payment"][step-1];
+    }
+
+    function selectProperty(name, price) {
+        selectedRoom = name;
+        roomPrice = price;
         
-        prevBtn.style.visibility = currentStep === 1 ? 'hidden' : 'visible';
-        nextBtn.innerHTML = currentStep === totalSteps 
-            ? 'Confirm & Finalize <i class="fa-solid fa-check text-sm"></i>' 
-            : 'Continue <i class="fa-solid fa-arrow-right text-sm"></i>';
+        // Update Calculations
+        const nights = 3;
+        const subtotal = roomPrice * nights;
+        const cleaning = 150;
+        const vat = (subtotal + cleaning) * 0.15;
+        const total = subtotal + cleaning + vat;
+
+        document.getElementById('reviewTitle').innerText = name;
+        document.getElementById('finalRoomName').innerText = name;
+        document.getElementById('basePriceDisplay').innerText = `R ${subtotal.toLocaleString()}.00`;
+        document.getElementById('vatDisplay').innerText = `R ${vat.toLocaleString()}.00`;
+        document.getElementById('totalPriceDisplay').innerText = `R ${total.toLocaleString()}.00`;
+        document.getElementById('finalTotal').innerText = `R ${total.toLocaleString()}.00`;
+        
+        // Simple Image Switching for Mockup
+        const img = document.getElementById('selectedImg');
+        img.src = name.includes('Deluxe') 
+            ? "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&q=80&w=300"
+            : "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&q=80&w=300";
+
+        goToStep(3);
     }
 
-    // Signature Logic
-    const canvas = document.getElementById('signature-canvas');
-    let ctx = null;
-    let drawing = false;
+    function startSoftLock() {
+        document.getElementById('holdTimer').classList.remove('hidden');
+        if (timerInterval) clearInterval(timerInterval);
+        
+        secondsLeft = 600;
+        timerInterval = setInterval(() => {
+            secondsLeft--;
+            const mins = Math.floor(secondsLeft / 60);
+            const secs = secondsLeft % 60;
+            document.getElementById('timerDisplay').innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+            document.getElementById('timerBar').style.width = `${(secondsLeft / 600) * 100}%`;
 
-    function setupCanvas() {
-        if (!canvas) return;
-        ctx = canvas.getContext('2d');
-        canvas.width = canvas.offsetWidth;
-        canvas.height = 180;
-        ctx.lineWidth = 2;
-        ctx.lineCap = 'round';
-        ctx.strokeStyle = '#1e1b4b';
+            if (secondsLeft <= 0) {
+                clearInterval(timerInterval);
+                alert("Room hold expired. Please restart your search.");
+                window.location.reload();
+            }
+        }, 1000);
+
+        goToStep(4);
     }
 
-    function getPos(e) {
-        const rect = canvas.getBoundingClientRect();
-        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-        return { x: clientX - rect.left, y: clientY - rect.top };
+    function processPayment() {
+        const btn = document.getElementById('payBtn');
+        btn.disabled = true;
+        btn.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin"></i> Processing...`;
+        
+        // Simulate API call
+        setTimeout(() => {
+            document.getElementById('paymentArea').classList.add('hidden');
+            document.getElementById('successState').classList.remove('hidden');
+            document.getElementById('holdTimer').classList.add('hidden');
+            clearInterval(timerInterval);
+            
+            // Trigger confetti effect mock
+            console.log("Payment Confirmed and Calendar Updated.");
+        }, 2000);
     }
 
-    function startDrawing(e) { 
-        drawing = true; 
-        const pos = getPos(e);
-        ctx.beginPath();
-        ctx.moveTo(pos.x, pos.y);
-    }
-    
-    function stopDrawing() { drawing = false; }
-    function draw(e) {
-        if (!drawing) return;
-        const pos = getPos(e);
-        ctx.lineTo(pos.x, pos.y);
-        ctx.stroke();
-    }
-
-    function clearSignature() {
-        if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
-    }
-
-    function finalizeBooking() {
-        const email = document.getElementById('email').value;
-        document.getElementById('sentEmail').innerText = email;
-        document.getElementById('completionModal').classList.remove('hidden');
-    }
-
-    window.onload = function() {
-        canvas.addEventListener('mousedown', startDrawing);
-        canvas.addEventListener('mousemove', draw);
-        window.addEventListener('mouseup', stopDrawing);
-        canvas.addEventListener('touchstart', (e) => { e.preventDefault(); startDrawing(e); });
-        canvas.addEventListener('touchmove', (e) => { e.preventDefault(); draw(e); });
-        canvas.addEventListener('touchend', stopDrawing);
-        updateUI(); // Initial UI update
+    // Set default dates
+    window.onload = () => {
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('checkInDate').value = today;
+        document.getElementById('checkOutDate').value = today;
     };
 </script>
+
 </body>
 </html>

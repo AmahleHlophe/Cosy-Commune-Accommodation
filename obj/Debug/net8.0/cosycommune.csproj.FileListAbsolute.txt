@@ -538,3 +538,4 @@
 /home/clintmbambo/Documents/apps/Cosy Commune Accommodation Management System/cosycommune/obj/Debug/net8.0/cosycommune.pdb
 /home/clintmbambo/Documents/apps/Cosy Commune Accommodation Management System/cosycommune/obj/Debug/net8.0/cosycommune.genruntimeconfig.cache
 /home/clintmbambo/Documents/apps/Cosy Commune Accommodation Management System/cosycommune/obj/Debug/net8.0/ref/cosycommune.dll
+/home/clintmbambo/Documents/apps/Cosy Commune Accommodation Management System/cosycommune/obj/Debug/net8.0/cosycommune.sourcelink.json
