@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("cosycommune")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+eba13474fb7764392908b434e9b96bbd40952f0f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4fc76a4f474bd18150aa7402a700447753fe614f")]
 [assembly: System.Reflection.AssemblyProductAttribute("cosycommune")]
 [assembly: System.Reflection.AssemblyTitleAttribute("cosycommune")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
