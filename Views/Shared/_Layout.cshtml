@@ -12,7 +12,24 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">cosycommune</a>
+                @if(User.IsInRole("Tenant")){
+                    <a class="navbar-brand" asp-area="" asp-controller="Tenants" asp-action="Dashboard">cosycommune</a>
+                }
+                else if(User.IsInRole("Manager")){
+                    <a class="navbar-brand" asp-area="" asp-controller="Rooms" asp-action="Dashboard">cosycommune</a>
+                }
+                else if(User.IsInRole("Admin")){
+                    <a class="navbar-brand" asp-area="" asp-controller="Rooms" asp-action="Dashboard">cosycommune</a>
+                }
+                else if(User.IsInRole("Guest")){
+                    <a class="navbar-brand" asp-area="" asp-controller="Guest" asp-action="Dashboard">cosycommune</a>
+                }
+                else if(User.IsInRole("Owner")){
+                    <a class="navbar-brand" asp-area="" asp-controller="Owner" asp-action="Dashboard">cosycommune</a>
+                }
+                else{
+                    <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">cosycommune</a>
+                }
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
