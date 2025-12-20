@@ -1,0 +1,85 @@
+@model Maintenance;
+
+
+<!-- VIEW: Log Issue Form -->
+    <main class="view-panel" id="log-form">
+        <div class="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
+            <div class="p-8 border-b border-slate-100 bg-slate-50/50">
+                <h2 class="text-2xl font-black text-slate-900">Report an Issue</h2>
+                <p class="text-sm text-slate-500">Please provide details so we can assign the right technician.</p>
+            </div>
+            
+            <form id="maintenanceForm" class="p-8 space-y-6" onsubmit="submitIssue(event)">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Category Selection -->
+                    <div class="space-y-2">
+                        <label class="text-xs font-black uppercase text-slate-400 ml-1">Category</label>
+                        <select id="m_category" required class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all appearance-none">
+                            <option value="">Select Category</option>
+                            <option value="plumbing">Plumbing & Water</option>
+                            <option value="electrical">Electrical & Lighting</option>
+                            <option value="appliance">Appliance Repair</option>
+                            <option value="structure">Structural / Walls</option>
+                            <option value="security">Security & Access</option>
+                        </select>
+                    </div>
+
+                    <!-- Priority Selection -->
+                    <div class="space-y-2">
+                        <label class="text-xs font-black uppercase text-slate-400 ml-1">Priority Level</label>
+                        <div class="flex gap-2">
+                            <label class="flex-1 cursor-pointer">
+                                <input type="radio" name="priority" value="low" class="hidden peer">
+                                <div class="p-4 text-center border border-slate-200 rounded-2xl peer-checked:bg-emerald-50 peer-checked:border-emerald-500 peer-checked:text-emerald-700 text-xs font-bold transition-all">Low</div>
+                            </label>
+                            <label class="flex-1 cursor-pointer">
+                                <input type="radio" name="priority" value="medium" checked class="hidden peer">
+                                <div class="p-4 text-center border border-slate-200 rounded-2xl peer-checked:bg-amber-50 peer-checked:border-amber-500 peer-checked:text-amber-700 text-xs font-bold transition-all">Medium</div>
+                            </label>
+                            <label class="flex-1 cursor-pointer">
+                                <input type="radio" name="priority" value="high" class="hidden peer">
+                                <div class="p-4 text-center border border-slate-200 rounded-2xl peer-checked:bg-red-50 peer-checked:border-red-500 peer-checked:text-red-700 text-xs font-bold transition-all">High/Emergency</div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Location in Unit -->
+                    <div class="space-y-2">
+                        <label class="text-xs font-black uppercase text-slate-400 ml-1">Location in Unit</label>
+                        <input type="text" id="m_location" required placeholder="e.g. Master Bedroom, Balcony" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none">
+                    </div>
+
+                    <!-- Best Contact Time -->
+                    <div class="space-y-2">
+                        <label class="text-xs font-black uppercase text-slate-400 ml-1">Best Time for Entry</label>
+                        <select id="m_time" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none">
+                            <option>Anytime</option>
+                            <option>Morning (08:00 - 12:00)</option>
+                            <option>Afternoon (12:00 - 17:00)</option>
+                            <option>Contact me first</option>
+                        </select>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="space-y-2 md:col-span-2">
+                        <label class="text-xs font-black uppercase text-slate-400 ml-1">Description of Issue</label>
+                        <textarea id="m_desc" required placeholder="Describe the problem in detail..." class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none h-32 resize-none"></textarea>
+                    </div>
+
+                    <!-- Photos -->
+                    <div class="space-y-2 md:col-span-2">
+                        <label class="text-xs font-black uppercase text-slate-400 ml-1">Photos (Optional)</label>
+                        <div class="border-2 border-dashed border-slate-200 rounded-3xl p-8 text-center hover:border-indigo-400 transition-colors cursor-pointer bg-slate-50/50">
+                            <i class="fa-solid fa-camera text-2xl text-slate-400 mb-2"></i>
+                            <p class="text-sm text-slate-500">Click to upload or drag and drop images</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex gap-4 pt-4">
+                    <button type="button" onclick="showView('dashboard')" class="px-8 py-4 border border-slate-200 rounded-2xl font-bold text-slate-500 hover:bg-slate-50 transition-all">Cancel</button>
+                    <button type="submit" class="flex-1 py-4 bg-indigo-600 text-white rounded-2xl font-bold shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all">Submit Maintenance Request</button>
+                </div>
+            </form>
+        </div>
+    </main>

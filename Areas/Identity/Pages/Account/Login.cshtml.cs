@@ -115,7 +115,31 @@ namespace cosycommune.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");
-                    return LocalRedirect(returnUrl);
+                    if (User.IsInRole("Tenant"))
+                    {
+                        returnUrl = Url.Content("~/Tenants/Dashboard");
+                        return LocalRedirect(returnUrl);
+                    }
+                    else if (User.IsInRole("Guest"))
+                    {
+                        returnUrl = Url.Content("~/Guests/Dashboard");
+                        return LocalRedirect(returnUrl);
+                    }
+                    else if (User.IsInRole("Manager"))
+                    {
+                        returnUrl = Url.Content("~/Rooms/Dashboard");
+                        return LocalRedirect(returnUrl);
+                    }
+                    else if (User.IsInRole("Admin"))
+                    {
+                        returnUrl = Url.Content("~/Rooms/Dashboard");
+                        return LocalRedirect(returnUrl);
+                    }
+                    else
+                    {
+                        returnUrl = Url.Content("~/");
+                        return LocalRedirect(returnUrl);
+                    }
                 }
                 if (result.RequiresTwoFactor)
                 {

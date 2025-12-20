@@ -409,14 +409,14 @@ else {
             <div class="row justify-content-center g-3">
                 <!-- CTA 1: Staff/Manager Login -->
                 <div class="col-md-auto">
-                    <a asp-controller="Home" asp-action="Index" class="btn btn-primary-login btn-lg shadow-lg">
+                    <a asp-controller="Dashboard" class="btn btn-primary-login btn-lg shadow-lg">
                         <i class="fas fa-sign-in-alt me-2"></i> Access Dashboard
                     </a>
                 </div>
                 
                 <!-- CTA 2: Tenant/Guest Access (Future Link) -->
                 <div class="col-md-auto">
-                    <a href="#x" class="btn btn-secondary-cta btn-lg shadow-lg">
+                    <a asp-controller="Tenants" asp-action="Dashboard" class="btn btn-secondary-cta btn-lg shadow-lg">
                         <i class="fas fa-key me-2"></i> Resident Portal
                     </a>
                 </div>

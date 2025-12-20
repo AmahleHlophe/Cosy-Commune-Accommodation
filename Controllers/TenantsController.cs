@@ -1,15 +1,21 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-[Authorize(Roles="Manager, Admin")]
-public class RoomsController : Controller
+[Authorize(Roles = "Tenant, Manager")]
+public class TenantsController : Controller
 {
     private readonly ApplicationDbContext _context;
 
     // 1. Constructor for Dependency Injection (DI)
-    public RoomsController(ApplicationDbContext context)
+    public TenantsController(ApplicationDbContext context)
     {
         _context = context;
+    }
+
+    //MAIN
+    public IActionResult Dashboard()
+    {
+        return View();
     }
 
     // --- READ Operations ---
@@ -18,7 +24,7 @@ public class RoomsController : Controller
     // Displays a list of all rooms.
     public async Task<IActionResult> Index()
     {
-        return View(await _context.Rooms.ToListAsync());
+        return View(await _context.Tenants.ToListAsync());
     }
 
     // GET: Rooms/Details/5
@@ -30,15 +36,15 @@ public class RoomsController : Controller
             return NotFound();
         }
 
-        var room = await _context.Rooms
+        var tenant = await _context.Tenants
             .FirstOrDefaultAsync(m => m.Id == id);
             
-        if (room == null)
+        if (tenant == null)
         {
             return NotFound();
         }
 
-        return View(room);
+        return View(tenant);
     }
 
     // --- CREATE Operations ---
@@ -54,15 +60,15 @@ public class RoomsController : Controller
     // Handles the form submission and saves the new room to the database.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("RoomNumber,RoomType,Price,Capacity,IsOccupied")] Room room)
+    public async Task<IActionResult> Create([Bind("FullName,IdNumber,Email,CreatedAt")] Tenant tenant)
     {
         if (ModelState.IsValid)
         {
-            _context.Add(room);
+            _context.Add(tenant);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-        return View(room);
+        return View(tenant);
     }
 
     // --- UPDATE Operations ---
@@ -76,21 +82,21 @@ public class RoomsController : Controller
             return NotFound();
         }
 
-        var room = await _context.Rooms.FindAsync(id);
-        if (room == null)
+        var tenant = await _context.Tenants.FindAsync(id);
+        if (tenant == null)
         {
             return NotFound();
         }
-        return View(room);
+        return View(tenant);
     }
 
     // POST: Rooms/Edit/5
     // Handles the form submission and updates the existing room in the database.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, [Bind("RoomId,RoomNumber,RoomType,Price")] Room room)
+    public async Task<IActionResult> Edit(int id, [Bind("FullName,IdNumber,Email,CreatedAt")] Tenant tenant)
     {
-        if (id != room.Id)
+        if (id != tenant.Id)
         {
             return NotFound();
         }
@@ -99,12 +105,12 @@ public class RoomsController : Controller
         {
             try
             {
-                _context.Update(room); // Marks the entity as modified
+                _context.Update(tenant); // Marks the entity as modified
                 await _context.SaveChangesAsync(); // Executes the UPDATE command
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!_context.Rooms.Any(e => e.Id == id))
+                if (!_context.Tenants.Any(e => e.Id == id))
                 {
                     return NotFound();
                 }
@@ -112,25 +118,7 @@ public class RoomsController : Controller
             }
             return RedirectToAction(nameof(Index));
         }
-        return View(room);
-    }
-
-    public async Task<IActionResult> Options(int? id)
-    {
-        return View(await _context.Rooms.FindAsync(id));
-    }
-    
-    public async Task<IActionResult> Onboard()
-    {
-        var units = await _context.Rooms
-        .Where(x => !x.IsOccupied)
-        .ToListAsync();
-
-        var onboard = new BookingVM
-        {
-            Rooms = units
-        };
-        return View(onboard);
+        return View(tenant);
     }
 
     // --- DELETE Operations ---
@@ -144,15 +132,15 @@ public class RoomsController : Controller
             return NotFound();
         }
 
-        var room = await _context.Rooms
+        var tenant = await _context.Tenants
             .FirstOrDefaultAsync(m => m.Id == id);
             
-        if (room == null)
+        if (tenant == null)
         {
             return NotFound();
         }
 
-        return View(room);
+        return View(tenant);
     }
 
     // POST: Rooms/Delete/5
@@ -161,10 +149,10 @@ public class RoomsController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
-        var room = await _context.Rooms.FindAsync(id);
-        if (room != null)
+        var tenant = await _context.Tenants.FindAsync(id);
+        if (tenant != null)
         {
-            _context.Rooms.Remove(room); // Marks the entity for deletion
+            _context.Tenants.Remove(tenant); // Marks the entity for deletion
             await _context.SaveChangesAsync(); // Executes the DELETE command
         }
         return RedirectToAction(nameof(Index));
