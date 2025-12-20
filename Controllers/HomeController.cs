@@ -18,15 +18,7 @@ public class HomeController : Controller
 
     public async Task<IActionResult> Index()
     {
-        var roomsList = await _db.Rooms
-        .Where(x => !x.IsOccupied)
-        .ToListAsync();
-
-        var dashboardVM = new DashboardVM
-        {
-            Rooms = roomsList
-        };
-        return View(dashboardVM);
+        return View();
     }
 
     public IActionResult Privacy()

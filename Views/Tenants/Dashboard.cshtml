@@ -42,8 +42,8 @@
     <main class="max-w-6xl mx-auto px-4 pt-2 pb-24 md:pt-24">
         <!-- Welcome Header -->
         <header class="mb-10">
-            <h1 class="text-3xl font-black text-slate-900">Hello, Alex 👋</h1>
-            <p class="text-slate-500 font-medium">Unit 402 • <span class="text-emerald-600">Lease Active</span></p>
+            <h1 class="text-3xl font-black text-slate-900">Hello, @User.Identity?.Name 👋</h1>
+            <p class="text-slate-500 font-medium">Unit 305 • <span class="text-emerald-600">Lease Active</span></p>
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -76,7 +76,7 @@
 
                 <!-- Action Grid -->
                 <section class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    <a href="/Maintenance/Create" class="action-card bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col items-center text-center gap-3 hover:border-indigo-500 transition-all">
+                    <a href="/Maintenance/LogMaintenanceFlow" class="action-card bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col items-center text-center gap-3 hover:border-indigo-500 transition-all">
                         <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center text-xl">
                             <i class="fa-solid fa-screwdriver-wrench"></i>
                         </div>

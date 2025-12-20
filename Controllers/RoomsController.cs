@@ -12,6 +12,19 @@ public class RoomsController : Controller
         _context = context;
     }
 
+    public async Task<IActionResult> Dashboard()
+    {
+        var roomsList = await _context.Rooms
+        .Where(x => !x.IsOccupied)
+        .ToListAsync();
+
+        var dashboardVM = new DashboardVM
+        {
+            Rooms = roomsList
+        };
+        return View(dashboardVM);
+    }
+
     // --- READ Operations ---
 
     // GET: Rooms
