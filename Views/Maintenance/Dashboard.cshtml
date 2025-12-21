@@ -29,6 +29,10 @@
     <!-- VIEW: Tenant Dashboard -->
     <main class="view-panel active" id="dashboard">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <button onclick="showView('log-form')" class="bg-indigo-600 p-6 rounded-3xl shadow-lg shadow-indigo-100 text-white flex flex-col justify-center hover:bg-indigo-700 transition-all group">
+                <i class="fa-solid fa-plus-circle text-2xl mb-2 group-hover:scale-110 transition-transform"></i>
+                <p class="font-bold">Log New Issue</p>
+            </button>
             <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
                 <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Open Issues</p>
                 <p class="text-3xl font-black text-slate-900">01</p>
@@ -37,10 +41,6 @@
                 <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Resolved This Month</p>
                 <p class="text-3xl font-black text-indigo-600">04</p>
             </div>
-            <button onclick="showView('log-form')" class="bg-indigo-600 p-6 rounded-3xl shadow-lg shadow-indigo-100 text-white flex flex-col justify-center hover:bg-indigo-700 transition-all group">
-                <i class="fa-solid fa-plus-circle text-2xl mb-2 group-hover:scale-110 transition-transform"></i>
-                <p class="font-bold">Log New Issue</p>
-            </button>
         </div>
 
         <h2 class="text-xl font-bold mb-4 px-2">Recent Activity</h2>

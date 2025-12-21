@@ -31,7 +31,7 @@ namespace CosyCommune.Controllers
             return View(requests);
         }
 
-        public IActionResult LogMaintenanceFlow()
+        public IActionResult Dashboard()
         {
             return View();
         }

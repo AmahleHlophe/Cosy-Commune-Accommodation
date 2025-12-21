@@ -1,0 +1,175 @@
+@model Facility;
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Facility | Cosy Commune</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+
+    <div id="mainContainer" class="max-w-md mx-auto px-6 py-12">
+        
+        <!-- View 1: Booking Form -->
+        <div id="bookingSection">
+            <div class="mb-8">
+                <a href="/Tenants/Dashboard" class="text-slate-400 hover:text-indigo-600 transition-colors font-bold text-sm">
+                    <i class="fa-solid fa-arrow-left mr-2"></i> Back to Dashboard
+                </a>
+                <h1 class="text-3xl font-black mt-4">Custom Booking</h1>
+                <p class="text-slate-500">Set your preferred time and duration.</p>
+            </div>
+
+            <form id="bookingForm" class="space-y-6">
+                <div class="space-y-5">
+                    <!-- Facility Selection -->
+                    <label class="block">
+                        <span class="text-xs font-black uppercase text-slate-400 tracking-wider">Select Amenity</span>
+                        <select id="facility" name="facility" required class="mt-2 w-full p-4 bg-white border border-slate-200 rounded-2xl font-bold focus:ring-2 focus:ring-indigo-500 outline-none appearance-none cursor-pointer">
+                            <option value="">Choose one...</option>
+                            <option value="Private Gym">Private Gym</option>
+                            <option value="Rooftop Braai Area">Rooftop Braai Area</option>
+                            <option value="Communal Lounge">Communal Lounge</option>
+                            <option value="Tennis Court">Tennis Court</option>
+                        </select>
+                    </label>
+
+                    <!-- Date Selection -->
+                    <label class="block">
+                        <span class="text-xs font-black uppercase text-slate-400 tracking-wider">Date</span>
+                        <input type="date" id="date" name="date" required class="mt-2 w-full p-4 bg-white border border-slate-200 rounded-2xl font-bold focus:ring-2 focus:ring-indigo-500 outline-none">
+                    </label>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <!-- Custom Start Time -->
+                        <label class="block">
+                            <span class="text-xs font-black uppercase text-slate-400 tracking-wider">Start Time</span>
+                            <input type="time" id="startTime" name="startTime" required oninput="updateSummary()" class="mt-2 w-full p-4 bg-white border border-slate-200 rounded-2xl font-bold focus:ring-2 focus:ring-indigo-500 outline-none">
+                        </label>
+
+                        <!-- Duration -->
+                        <label class="block">
+                            <span class="text-xs font-black uppercase text-slate-400 tracking-wider">Duration</span>
+                            <select id="duration" name="duration" onchange="updateSummary()" class="mt-2 w-full p-4 bg-white border border-slate-200 rounded-2xl font-bold focus:ring-2 focus:ring-indigo-500 outline-none appearance-none cursor-pointer">
+                                <option value="1">1 Hour</option>
+                                <option value="2">2 Hours</option>
+                                <option value="3">3 Hours</option>
+                                <option value="4">4 Hours</option>
+                            </select>
+                        </label>
+                    </div>
+
+                    <!-- Live Summary Card -->
+                    <div id="summaryCard" class="hidden bg-white border border-indigo-100 rounded-2xl p-5 shadow-sm">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-[10px] font-black uppercase text-indigo-400">Requesting Period</span>
+                            <i class="fa-solid fa-clock text-indigo-300 text-xs"></i>
+                        </div>
+                        <p class="text-sm font-bold text-indigo-900" id="summaryText">
+                            <!-- Injected by JS -->
+                        </p>
+                    </div>
+                </div>
+
+                <div id="error-container"></div>
+
+                <button type="submit" class="w-full py-5 bg-indigo-600 text-white rounded-2xl font-black shadow-lg shadow-indigo-100 hover:scale-[1.01] active:scale-[0.98] transition-all">
+                    Request Booking
+                </button>
+            </form>
+        </div>
+
+        <!-- View 2: Confirmation Screen -->
+        <div id="confirmationSection" class="hidden text-center py-10 animate-in fade-in duration-500 slide-in-from-bottom-4">
+            <div class="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fa-solid fa-paper-plane text-3xl"></i>
+            </div>
+            
+            <h2 class="text-3xl font-black mb-2">Request Sent!</h2>
+            <p class="text-slate-500 mb-8 px-4 leading-relaxed">
+                Your custom booking for <span id="confFacility" class="text-slate-900 font-bold"></span> is now with the management team.
+            </p>
+
+            <div class="bg-indigo-50 border border-indigo-100 rounded-2xl p-6 mb-8 text-left">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-[10px] font-black uppercase text-indigo-400">Date</p>
+                        <p class="text-sm font-bold" id="confDate"></p>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-black uppercase text-indigo-400">Time Range</p>
+                        <p class="text-sm font-bold" id="confTime"></p>
+                    </div>
+                </div>
+            </div>
+
+            <a href="/Tenants/Dashboard" class="w-full py-4 px-6 bg-slate-900 text-white rounded-2xl font-black hover:bg-slate-800 transition-colors">
+                Back to Dashboard
+            </a>
+        </div>
+
+    </div>
+
+    <script>
+        // Default date to today
+        window.onload = () => {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('date').value = today;
+            // Set a default start time for better UX
+            document.getElementById('startTime').value = "10:00";
+            updateSummary();
+        };
+
+        function calculateEndTime(startTime, hours) {
+            if (!startTime) return "";
+            const [h, m] = startTime.split(':').map(Number);
+            const endH = (h + parseInt(hours)) % 24;
+            return `${endH.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+        }
+
+        function updateSummary() {
+            const startTime = document.getElementById('startTime').value;
+            const duration = document.getElementById('duration').value;
+            const summaryCard = document.getElementById('summaryCard');
+            const summaryText = document.getElementById('summaryText');
+
+            if (startTime) {
+                const endTime = calculateEndTime(startTime, duration);
+                summaryCard.classList.remove('hidden');
+                summaryText.innerText = `${startTime} to ${endTime} (${duration} ${duration == 1 ? 'hour' : 'hours'})`;
+            } else {
+                summaryCard.classList.add('hidden');
+            }
+        }
+
+        document.getElementById('bookingForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const facility = document.getElementById('facility').value;
+            const date = document.getElementById('date').value;
+            const startTime = document.getElementById('startTime').value;
+            const duration = document.getElementById('duration').value;
+            
+            if (!facility) {
+                alert("Please select a facility.");
+                return;
+            }
+
+            const endTime = calculateEndTime(startTime, duration);
+
+            // Populate Confirmation
+            document.getElementById('confFacility').innerText = facility;
+            document.getElementById('confDate').innerText = new Date(date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+            document.getElementById('confTime').innerText = `${startTime} - ${endTime}`;
+
+            // Toggle Views
+            document.getElementById('bookingSection').classList.add('hidden');
+            document.getElementById('confirmationSection').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    </script>
+</body>
+</html>
