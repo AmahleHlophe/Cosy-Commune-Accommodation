@@ -29,10 +29,10 @@
     </nav> *@
 
     <!-- MAIN DASHBOARD -->
-    <div id="main-dashboard" class="view-panel active max-w-5xl mx-auto px-6 pt-10 md:pt-28">
+    <div id="main-dashboard" class="view-panel active max-w-5xl mx-auto px-6 pt-5 md:pt-28">
         <header class="mb-8">
-            <h1 class="text-3xl font-black text-slate-900">Welcome Home, Alex</h1>
-            <p class="text-slate-500 font-medium">Unit 402 • <span class="text-emerald-600 font-bold">Account in Good Standing</span></p>
+            <h1 class="text-3xl font-black text-slate-900">Welcome Home, @User.Identity?.Name</h1>
+            <p class="text-slate-500 font-medium"> • Unit 402</p>
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">

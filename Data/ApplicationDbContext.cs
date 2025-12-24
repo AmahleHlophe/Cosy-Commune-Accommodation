@@ -16,4 +16,5 @@ public class ApplicationDbContext : IdentityDbContext
     public DbSet<Lease> Leases { get; set; }
     public DbSet<Maintenance> Maintenance { get; set; }
     public DbSet<Facility> Facility { get; set; }
+    public DbSet<Checkout> Checkouts { get; set; }
 }

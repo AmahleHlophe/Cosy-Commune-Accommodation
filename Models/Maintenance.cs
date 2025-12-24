@@ -41,7 +41,7 @@ namespace cosycommune.Models
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     
     // Linking to the Tenant
-    public Guid TenantId { get; set; }
-    public virtual Tenant? Tenant { get; set; }
+    public Tenant? Tenant { get; set; }
+    public int TenantId { get; set; }
     }
 }

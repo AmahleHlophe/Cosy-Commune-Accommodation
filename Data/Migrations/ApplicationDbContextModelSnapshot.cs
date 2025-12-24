@@ -15,7 +15,7 @@ namespace cosycommune.Data.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "8.0.20");
+            modelBuilder.HasAnnotation("ProductVersion", "8.0.22");
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
@@ -209,6 +209,56 @@ namespace cosycommune.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("cosycommune.Models.Checkout", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Reason")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("VacateDate")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Checkouts");
+                });
+
+            modelBuilder.Entity("cosycommune.Models.Facility", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Amenity")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("TEXT");
+
+                    b.Property<TimeSpan>("Duration")
+                        .HasColumnType("TEXT");
+
+                    b.Property<TimeOnly>("StartTime")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Facility");
+                });
+
             modelBuilder.Entity("cosycommune.Models.Lease", b =>
                 {
                     b.Property<int>("Id")
@@ -243,6 +293,57 @@ namespace cosycommune.Data.Migrations
                     b.HasIndex("TenantId");
 
                     b.ToTable("Leases");
+                });
+
+            modelBuilder.Entity("cosycommune.Models.Maintenance", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ImagePath")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("LocationInUnit")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PreferredAccessTime")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Priority")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("TenantId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Unit")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("Maintenance");
                 });
 
             modelBuilder.Entity("cosycommune.Models.Room", b =>
@@ -360,6 +461,17 @@ namespace cosycommune.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Room");
+
+                    b.Navigation("Tenant");
+                });
+
+            modelBuilder.Entity("cosycommune.Models.Maintenance", b =>
+                {
+                    b.HasOne("cosycommune.Models.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Tenant");
                 });
