@@ -1,4 +1,7 @@
-@model DashboardVM;
+
+
+@if(User.IsInRole("Manager")){
+    @model DashboardVM;
 
 <!DOCTYPE html>
 <html lang="en">
@@ -10,7 +13,7 @@
         </h1>
         <p class="text-muted mb-5">
             Welcome, 
-            <span class="badge bg-secondary" id="userRole">Manager</span>.
+            <span class="badge bg-secondary" id="userRole">@User.Identity?.Name</span>.
         </p>
         
         <div class="row">
@@ -239,3 +242,385 @@
     </script>
 </body>
 </html>
+}
+else if(User.IsInRole("Owner")){
+Layout = null;
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Owner Dashboard | Financial Oversight</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden; }
+        .sidebar-item { cursor: pointer; transition: all 0.2s ease; border-radius: 8px; margin: 2px 12px; }
+        .sidebar-item:hover { background-color: rgba(255, 255, 255, 0.05); }
+        .active-nav { background-color: #4f46e5 !important; color: white !important; }
+        .view-section { display: none; }
+        .view-section.active { display: block; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+        
+        /* Logout Modal Animation */
+        #logout-modal { display: none; }
+        #logout-modal.show { display: flex; }
+    </style>
+</head>
+<body class="bg-[#F8FAFC] flex min-h-screen text-slate-900">
+
+    <!-- Sidebar -->
+    <aside class="w-72 bg-slate-950 text-slate-300 hidden md:flex flex-col flex-shrink-0 border-r border-slate-800">
+        <div class="p-8 pb-10">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-chart-pie text-white text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-white font-bold tracking-tight">CosyCommune</h1>
+                    <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Ownership Portal</p>
+                </div>
+            </div>
+        </div>
+
+        <nav class="flex-1 space-y-1">
+            <p class="px-8 text-[10px] font-bold text-slate-500 uppercase mb-4 tracking-widest">Financial Reports</p>
+            <div onclick="switchView('dashboard')" id="nav-dashboard" class="flex items-center px-4 py-3 active-nav sidebar-item">
+                <i class="fas fa-layer-group w-8 text-center"></i> Summary
+            </div>
+            <div onclick="switchView('revenue')" id="nav-revenue" class="flex items-center px-4 py-3 sidebar-item">
+                <i class="fas fa-hand-holding-dollar w-8 text-center"></i> Revenue Streams
+            </div>
+            <div onclick="switchView('expenses')" id="nav-expenses" class="flex items-center px-4 py-3 sidebar-item">
+                <i class="fas fa-file-invoice-dollar w-8 text-center"></i> Expense Logs
+            </div>
+            
+            <p class="px-8 text-[10px] font-bold text-slate-500 uppercase mt-8 mb-4 tracking-widest">Property Stats</p>
+            <div onclick="switchView('occupancy')" id="nav-occupancy" class="flex items-center px-4 py-3 sidebar-item">
+                <i class="fas fa-house-circle-check w-8 text-center"></i> Occupancy
+            </div>
+        </nav>
+
+        <div class="p-6 border-t border-slate-900">
+            <div class="bg-slate-900/50 p-4 rounded-2xl flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center font-bold text-xs text-indigo-400">JD</div>
+                    <div class="text-xs">
+                        <p class="font-bold text-white">Jane Doe</p>
+                        <p class="text-slate-500">Asset Owner</p>
+                    </div>
+                </div>
+                <a href="/Identity/Account/Logout" class="text-slate-500 hover:text-rose-400 transition-colors">
+                    <i class="fas fa-right-from-bracket"></i>
+                </a>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col h-screen overflow-hidden">
+        <!-- Top Navigation -->
+        <header class="h-20 bg-white/80 backdrop-blur-md border-b border-slate-100 px-8 flex justify-between items-center flex-shrink-0 z-10">
+            <div>
+                <h2 id="page-title" class="text-lg font-bold text-slate-800">Financial Performance</h2>
+                <p id="page-subtitle" class="text-xs text-slate-500">Real-time portfolio reporting</p>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-2 bg-slate-50 px-4 py-2 rounded-full">
+                    <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+                    <span class="text-xs font-semibold text-slate-600">Reporting Period: Dec 2025</span>
+                </div>
+                <button class="bg-slate-950 text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-slate-800 transition-all flex items-center">
+                    <i class="fas fa-download mr-2"></i> Export PDF
+                </button>
+            </div>
+        </header>
+
+        <!-- Dynamic Content Area -->
+        <div class="flex-1 overflow-y-auto p-8 custom-scrollbar">
+            
+            <!-- VIEW: SUMMARY -->
+            <section id="view-dashboard" class="view-section active space-y-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
+                        <div class="flex items-center space-x-3 mb-4">
+                            <div class="w-10 h-10 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center"><i class="fas fa-arrow-trend-up"></i></div>
+                            <span class="text-sm font-semibold text-slate-500">Yield to Date</span>
+                        </div>
+                        <div class="text-4xl font-bold text-slate-900">R142,830.00</div>
+                        <p class="text-xs text-emerald-500 font-bold mt-2">+8.4% vs last year</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
+                        <div class="flex items-center space-x-3 mb-4">
+                            <div class="w-10 h-10 bg-rose-100 text-rose-600 rounded-xl flex items-center justify-center"><i class="fas fa-receipt"></i></div>
+                            <span class="text-sm font-semibold text-slate-500">Monthly Operating Expenses</span>
+                        </div>
+                        <div class="text-4xl font-bold text-slate-900">R12,420.00</div>
+                        <p class="text-xs text-slate-400 mt-2">12% of total revenue</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
+                        <div class="flex items-center space-x-3 mb-4">
+                            <div class="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center"><i class="fas fa-house-circle-check"></i></div>
+                            <span class="text-sm font-semibold text-slate-500">Current Occupancy</span>
+                        </div>
+                        <div class="text-4xl font-bold text-slate-900">96.8%</div>
+                        <p class="text-xs text-slate-400 mt-2">32 of 33 units leased</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+                    <div class="p-6 border-b border-slate-50 flex justify-between items-center">
+                        <h3 class="font-bold text-slate-800">Monthly Profit/Loss Ledger</h3>
+                        <span class="text-xs font-bold text-indigo-600 cursor-pointer">View All History <i class="fas fa-chevron-right ml-1"></i></span>
+                    </div>
+                    <div class="p-0">
+                        <table class="w-full text-left">
+                            <thead class="bg-slate-50 text-[10px] uppercase font-bold text-slate-500 tracking-wider">
+                                <tr>
+                                    <th class="px-8 py-4">Transaction Date</th>
+                                    <th class="px-8 py-4">Category</th>
+                                    <th class="px-8 py-4">Description</th>
+                                    <th class="px-8 py-4 text-right">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-50">
+                                <tr>
+                                    <td class="px-8 py-5 text-sm text-slate-500">Dec 22, 2025</td>
+                                    <td class="px-8 py-5"><span class="px-2 py-1 bg-emerald-50 text-emerald-600 text-[10px] font-bold rounded-full">REVENUE</span></td>
+                                    <td class="px-8 py-5 text-sm font-medium">Monthly Rent Roll (Q4 Bulk)</td>
+                                    <td class="px-8 py-5 text-right font-bold text-emerald-600">+R48,250.00</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-8 py-5 text-sm text-slate-500">Dec 18, 2025</td>
+                                    <td class="px-8 py-5"><span class="px-2 py-1 bg-rose-50 text-rose-600 text-[10px] font-bold rounded-full">EXPENSE</span></td>
+                                    <td class="px-8 py-5 text-sm font-medium">Quarterly Property Tax Payment</td>
+                                    <td class="px-8 py-5 text-right font-bold text-rose-600">-R8,400.00</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-8 py-5 text-sm text-slate-500">Dec 15, 2025</td>
+                                    <td class="px-8 py-5"><span class="px-2 py-1 bg-amber-50 text-amber-600 text-[10px] font-bold rounded-full">MAINTENANCE</span></td>
+                                    <td class="px-8 py-5 text-sm font-medium">HVAC System Overhaul (Unit 502)</td>
+                                    <td class="px-8 py-5 text-right font-bold text-rose-600">-R1,250.00</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW: REVENUE STREAMS -->
+            <section id="view-revenue" class="view-section space-y-6">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm">
+                        <h3 class="font-bold text-slate-800 mb-6 text-xl">Revenue Distribution</h3>
+                        <div class="space-y-6">
+                            <div>
+                                <div class="flex justify-between text-sm mb-2">
+                                    <span class="text-slate-500 font-medium">Standard Lease Rent</span>
+                                    <span class="font-bold">R122,000.00</span>
+                                </div>
+                                <div class="h-3 w-full bg-slate-100 rounded-full overflow-hidden">
+                                    <div class="h-full bg-indigo-500 rounded-full" style="width: 85%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-2">
+                                    <span class="text-slate-500 font-medium">Premium Amenities (Gym/Pool)</span>
+                                    <span class="font-bold">R12,400.00</span>
+                                </div>
+                                <div class="h-3 w-full bg-slate-100 rounded-full overflow-hidden">
+                                    <div class="h-full bg-emerald-500 rounded-full" style="width: 10%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-2">
+                                    <span class="text-slate-500 font-medium">Parking Subscriptions</span>
+                                    <span class="font-bold">R8,430.00</span>
+                                </div>
+                                <div class="h-3 w-full bg-slate-100 rounded-full overflow-hidden">
+                                    <div class="h-full bg-amber-500 rounded-full" style="width: 5%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-indigo-900 p-8 rounded-3xl text-white flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-indigo-200 text-sm font-bold uppercase tracking-widest mb-2">Net Cash Position</h3>
+                            <div class="text-5xl font-bold">R1.24M</div>
+                        </div>
+                        <div class="pt-8">
+                            <p class="text-indigo-200 text-sm mb-4">You have a surplus of <span class="text-white font-bold">R22,400</span> this month after all operational costs were deducted from revenue.</p>
+                            <div class="flex space-x-2">
+                                <span class="bg-white/10 text-[10px] font-bold px-3 py-1 rounded-full uppercase">Healthy Liquidity</span>
+                                <span class="bg-white/10 text-[10px] font-bold px-3 py-1 rounded-full uppercase">Low Risk</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW: EXPENSE LOGS -->
+            <section id="view-expenses" class="view-section">
+                <div class="bg-white rounded-3xl border border-slate-100 shadow-sm p-8">
+                    <div class="flex justify-between items-center mb-8">
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-xl text-indigo-600">Operating Cost Ledger</h3>
+                            <p class="text-sm text-slate-400">Owner-only view of historical business expenditures</p>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button class="px-4 py-2 border border-slate-200 text-xs font-bold rounded-lg hover:bg-slate-50 transition">Filter by Date</button>
+                            <button class="px-4 py-2 border border-slate-200 text-xs font-bold rounded-lg hover:bg-slate-50 transition">Filter by Type</button>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <!-- Expense Item -->
+                        <div class="flex items-center justify-between p-5 bg-slate-50 rounded-2xl">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center text-rose-500">
+                                    <i class="fas fa-faucet-drip text-xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-slate-800">Plumbing Maintenance (Bulk)</h4>
+                                    <p class="text-xs text-slate-400">Vendor: QuickFix Inc • ID #EXP-992</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-lg font-bold text-slate-900">$2,450.00</p>
+                                <p class="text-[10px] font-bold text-slate-400 uppercase">Paid via Ledger Transfer</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between p-5 bg-slate-50 rounded-2xl">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center text-indigo-500">
+                                    <i class="fas fa-shield-halved text-xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-slate-800">Property Insurance Premium</h4>
+                                    <p class="text-xs text-slate-400">Carrier: Shield-Guard • ID #EXP-881</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-lg font-bold text-slate-900">$1,200.00</p>
+                                <p class="text-[10px] font-bold text-emerald-500 uppercase">Automated Recurring</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW: OCCUPANCY -->
+            <section id="view-occupancy" class="view-section">
+                <div class="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm">
+                    <h3 class="font-bold text-slate-800 text-xl mb-6">Asset Capacity Status</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <!-- Occupancy Card -->
+                        <div class="p-6 border border-emerald-100 bg-emerald-50/50 rounded-2xl flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-bold text-emerald-600 uppercase mb-1">Active Leases</p>
+                                <h4 class="text-3xl font-black text-emerald-950">32</h4>
+                            </div>
+                            <i class="fas fa-user-check text-2xl text-emerald-200"></i>
+                        </div>
+                        <div class="p-6 border border-rose-100 bg-rose-50/50 rounded-2xl flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-bold text-rose-600 uppercase mb-1">Vacant Units</p>
+                                <h4 class="text-3xl font-black text-rose-950">01</h4>
+                            </div>
+                            <i class="fas fa-user-xmark text-2xl text-rose-200"></i>
+                        </div>
+                        <div class="p-6 border border-indigo-100 bg-indigo-50/50 rounded-2xl flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-bold text-indigo-600 uppercase mb-1">Pending Renewals</p>
+                                <h4 class="text-3xl font-black text-indigo-950">05</h4>
+                            </div>
+                            <i class="fas fa-clock-rotate-left text-2xl text-indigo-200"></i>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Logout Modal Overlay -->
+    <div id="logout-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 items-center justify-center p-4">
+        <div class="bg-white max-w-sm w-full rounded-3xl p-8 text-center shadow-2xl">
+            <div class="w-20 h-20 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-right-from-bracket text-3xl"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-slate-900 mb-2">Log Out</h3>
+            <p class="text-slate-500 text-sm mb-8">Are you sure you want to end your secure ownership session?</p>
+            <div class="flex flex-col space-y-3">
+                <button onclick="logoutAction()" class="w-full bg-rose-500 text-white font-bold py-3 rounded-xl hover:bg-rose-600 transition shadow-lg shadow-rose-200">
+                    Yes, Log Out
+                </button>
+                <a href="/Identity/Account/Logout" class="w-full bg-slate-100 text-slate-600 font-bold py-3 rounded-xl hover:bg-slate-200 transition">
+                    Keep Viewing
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchView(viewName) {
+            // 1. Hide all sections
+            const sections = document.querySelectorAll('.view-section');
+            sections.forEach(s => s.classList.remove('active'));
+
+            // 2. Remove active state from all nav items
+            const navItems = document.querySelectorAll('.sidebar-item');
+            navItems.forEach(n => n.classList.remove('active-nav'));
+
+            // 3. Show the requested section
+            document.getElementById(`view-${viewName}`).classList.add('active');
+
+            // 4. Highlight the nav item
+            document.getElementById(`nav-${viewName}`).classList.add('active-nav');
+
+            // 5. Update Header text for clarity
+            const titles = {
+                dashboard: { main: 'Financial Performance', sub: 'Real-time portfolio reporting' },
+                revenue: { main: 'Revenue Analysis', sub: 'Breakdown of all income streams' },
+                expenses: { main: 'Operating Expenditure', sub: 'Detailed log of business costs' },
+                occupancy: { main: 'Occupancy Oversight', sub: 'Asset utilization and vacancy monitoring' }
+            };
+            
+            document.getElementById('page-title').innerText = titles[viewName].main;
+            document.getElementById('page-subtitle').innerText = titles[viewName].sub;
+        }
+
+        function toggleLogoutModal() {
+            const modal = document.getElementById('logout-modal');
+            modal.classList.toggle('show');
+        }
+
+        function logoutAction() {
+            // Reset UI state
+            document.body.innerHTML = `
+                <div class="min-h-screen w-full flex flex-col items-center justify-center bg-slate-950 text-white p-6">
+                    <div class="w-20 h-20 bg-indigo-600 rounded-2xl flex items-center justify-center mb-8 animate-bounce">
+                        <i class="fas fa-lock text-3xl"></i>
+                    </div>
+                    <h2 class="text-3xl font-bold mb-2">Session Ended</h2>
+                    <p class="text-slate-400 mb-8 text-center max-w-xs">You have been securely logged out of the Ownership Portal.</p>
+                    <button onclick="location.reload()" class="bg-white text-slate-950 px-8 py-3 rounded-xl font-bold hover:bg-indigo-50 transition">
+                        Log Back In
+                    </button>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
+}
+else if(User.IsInRole("Admin")){
+    //Admin dashboard
+}
+else {
+    //Show nothing
+}

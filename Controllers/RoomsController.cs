@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-[Authorize(Roles="Manager, Admin")]
+[Authorize(Roles="Manager, Admin, Owner")]
 public class RoomsController : Controller
 {
     private readonly ApplicationDbContext _context;

@@ -25,7 +25,7 @@
                     <a class="logo-icon" asp-area="" asp-controller="Guest" asp-action="Dashboard">cosycommune</a>
                 }
                 else if(User.IsInRole("Owner")){
-                    <a class="navbar-brand logo-icon" asp-area="" asp-controller="Owner" asp-action="Dashboard">cosycommune</a>
+                    <a class="navbar-brand logo-icon" asp-area="" asp-controller="Rooms" asp-action="Dashboard">cosycommune</a>
                 }
                 else{
                     <a class="navbar-brand logo-icon" asp-area="" asp-controller="Home" asp-action="Index">cosycommune</a>

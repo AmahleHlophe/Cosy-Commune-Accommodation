@@ -135,6 +135,11 @@ namespace cosycommune.Areas.Identity.Pages.Account
                         returnUrl = Url.Content("~/Rooms/Dashboard");
                         return LocalRedirect(returnUrl);
                     }
+                    else if (User.IsInRole("Owner"))
+                    {
+                        returnUrl = Url.Content("~/Rooms/Dashboard");
+                        return LocalRedirect(returnUrl);
+                    }
                     else
                     {
                         returnUrl = Url.Content("~/");
