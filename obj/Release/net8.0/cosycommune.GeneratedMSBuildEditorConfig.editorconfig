@@ -186,6 +186,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = QXJlYXMvSWRlbnRpdHkvUGFnZXMvX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
+[/home/clintmbambo/Documents/apps/Cosy Commune Accommodation Management System/cosycommune/Views/Checkout/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ2hlY2tvdXQvQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
 [/home/clintmbambo/Documents/apps/Cosy Commune Accommodation Management System/cosycommune/Views/Facility/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvRmFjaWxpdHkvQ3JlYXRlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
